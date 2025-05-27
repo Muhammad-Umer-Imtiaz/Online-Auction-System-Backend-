@@ -77,3 +77,11 @@ export const placeBid = catchAsyncErrors(async (req, res, next) => {
     currentBid: auctionItem.currentBid,
   });
 });
+export const getBids = catchAsyncErrors(async (req, res, next) => {
+  const { id } = req.params;
+
+  const auctionItem = await Auction.findById(id).populate({plath: 'bids.userId', select: 'userName profileImage'});
+  if (!auctionItem) {
+    return next(new ErrorHandler("Auction Item not found.", 404));
+  }
+})
