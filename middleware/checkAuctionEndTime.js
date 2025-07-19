@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { catchAsyncErrors } from "./catchAsyncError.js";
 import ErrorHandler from "./error.js";
-import { Auction } from "../models/auctionSchema.js";
+import { Auction } from "../Models/auctionSchema.js";
 
 export const checkAuctionEndTime = catchAsyncErrors(async (req, res, next) => {
   const { id } = req.params;

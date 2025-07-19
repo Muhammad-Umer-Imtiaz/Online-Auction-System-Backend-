@@ -1,8 +1,8 @@
 import { catchAsyncErrors } from "../middleware/catchAsyncError.js";
 import ErrorHandler from "../middleware/error.js";
 import { Bid } from "../Models/bidSchema.js";
-import { Auction } from "../models/auctionSchema.js";
-import { User } from "../models/userSchema.js";
+import { Auction } from "../Models/auctionSchema.js";
+import { User } from "../Models/userSchema.js";
 import { sendMail } from "../utils/sendMail.js";
 
 export const placeBid = catchAsyncErrors(async (req, res, next) => {

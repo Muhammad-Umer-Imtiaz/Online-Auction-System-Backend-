@@ -1,6 +1,6 @@
 import { catchAsyncErrors } from "../middleware/catchAsyncError.js";
 import ErrorHandler from "../middleware/error.js";
-import { User } from "../models/userSchema.js";
+import { User } from "../Models/userSchema.js";
 import { v2 as cloudinary } from "cloudinary";
 import { generateToken } from "../utils/jwtToken.js";
 import bcrypt from "bcryptjs";

@@ -2,7 +2,7 @@ import { catchAsyncErrors } from "../middleware/catchAsyncError.js";
 import ErrorHandler from "../middleware/error.js";
 import { Auction } from "../Models/AuctionSchema.js";
 import mongoose from "mongoose";
-import { User } from "../models/userSchema.js";
+import { User } from "../Models/userSchema.js";
 import { Bid } from "../Models/bidSchema.js";
 export const addNewAuctionItem = catchAsyncErrors(async (req, res, next) => {
   try {

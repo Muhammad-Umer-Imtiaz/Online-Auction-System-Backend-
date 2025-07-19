@@ -4,7 +4,7 @@ import ErrorHandler from "../middleware/error.js";
 import { Auction } from "../Models/AuctionSchema.js";
 import { PaymentProof } from "../Models/commisionProofSchema.js";
 import { Commission } from "../Models/commisonSchema.js";
-import { User } from "../models/userSchema.js";
+import { User } from "../Models/userSchema.js";
 import { Bid } from "../Models/bidSchema.js";
 
 // ---------------------- DELETE AUCTION BY ADMIN ----------------------
