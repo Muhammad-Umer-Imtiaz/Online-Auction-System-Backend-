@@ -4,9 +4,9 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { connectDB } from "./Database/dbconnection.js";
 import ErrorHandler, { errorMiddleware } from "./middleware/error.js";
-import userRoutes from "./Routes/UserRoutes.js";
 import categoryRoutes from "./Routes/categoryRoutes.js";
 import auctionRoutes from "./Routes/auctionRoutes.js";
+import userRoutes from "./Routes/userRoutes.js";
 import bidRoutes from "./Routes/bidRoutes.js";
 import commisionProofRoutes from "./Routes/commisionProofRoutes.js";
 import adminRoutes from "./Routes/adminRoutes.js";
@@ -15,7 +15,7 @@ import { verifyCommissionCron } from "./Automation/verifyCommissionCron.js";
 const app = express();
 
 // Load environment variables
-dotenv.config({ path: "./.env" });
+dotenv.config({ path: "./.env" }); 
 
 // Middleware
 app.use(
@@ -40,7 +40,7 @@ app.all("*", (req, res, next) => {
   next(new ErrorHandler(`Can't find ${req.originalUrl} on this server`, 404));
 });
 endedAuctionCron();
-verifyCommissionCron(); 
+verifyCommissionCron();
 connectDB();
 // Global error handler
 app.use(errorMiddleware);
