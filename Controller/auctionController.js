@@ -1,6 +1,6 @@
 import { catchAsyncErrors } from "../middleware/catchAsyncError.js";
 import ErrorHandler from "../middleware/error.js";
-import { Auction } from "../Models/auctionSchema.js";
+import { Auction } from "../Models/AuctionSchema.js";
 import mongoose from "mongoose";
 import { User } from "../Models/userSchema.js";
 import { Bid } from "../Models/bidSchema.js";

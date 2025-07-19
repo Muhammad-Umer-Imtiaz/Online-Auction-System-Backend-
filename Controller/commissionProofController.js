@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { Auction } from "../Models/auctionSchema.js";
+import { Auction } from "../Models/AuctionSchema.js";
 import { catchAsyncErrors } from "../middleware/catchAsyncError.js";
 import { User } from "../Models/userSchema.js";
 import ErrorHandler from "../middleware/error.js";
@@ -24,11 +24,7 @@ export const proofOfCommission = catchAsyncErrors(async (req, res, next) => {
   }
 
   if (user.unpaidComission === 0) {
-    return next(
-      new ErrorHandler(
-        `You Donot have unpaid Commission`,
-        403
-      ))
+    return next(new ErrorHandler(`You Donot have unpaid Commission`, 403));
   }
 
   if (user.unpaidComission < amount) {

@@ -1,9 +1,9 @@
 import cron from "node-cron";
-import { Auction } from "../Models/auctionSchema.js";
 import { User } from "../Models/userSchema.js";
 import { Bid } from "../Models/bidSchema.js";
 import { sendMail } from "../utils/sendMail.js";
 import { calculateCommission } from "../Controller/commissionProofController.js";
+import { Auction } from "../Models/AuctionSchema.js";
 
 export const endedAuctionCron = () => {
   cron.schedule("*/1 * * * *", async () => {
