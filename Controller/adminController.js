@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { catchAsyncErrors } from "../middleware/catchAsyncError.js";
 import ErrorHandler from "../middleware/error.js";
-import { Auction } from "../Models/AuctionSchema.js";
+import { Auction } from "../Models/auctionSchema.js";
 import { PaymentProof } from "../Models/commisionProofSchema.js";
 import { Commission } from "../Models/commisonSchema.js";
 import { User } from "../Models/userSchema.js";
