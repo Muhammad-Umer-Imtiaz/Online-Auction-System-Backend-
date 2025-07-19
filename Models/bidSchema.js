@@ -15,6 +15,7 @@ const bidSchema = new mongoose.Schema(
       },
       userName: String, // optional: cache for display speed
       profileImage: String, // optional: cache for display speed
+      amount:Number
     },
     auctionItem: {
       type: mongoose.Schema.Types.ObjectId,

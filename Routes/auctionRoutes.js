@@ -8,6 +8,7 @@ import {
   getMyAuctionItems,
   getSingleAuctionDetails,
   republishAuction,
+  updateAuction,
 } from "../Controller/auctionController.js";
 
 const router = express.Router();
@@ -23,5 +24,6 @@ router.get("/myitems/:id", isAuthenticated, getSingleAuctionDetails);
 router.get("/myauctions", isAuthenticated, getMyAuctionItems);
 router.delete("/delete/:id", isAuthenticated, deleteAuction);
 router.put("/republish/:id", isAuthenticated, republishAuction);
+router.put("/update/:id", isAuthenticated, updateAuction);
 
 export default router;

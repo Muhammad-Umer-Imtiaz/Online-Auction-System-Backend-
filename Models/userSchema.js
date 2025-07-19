@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import crypto from 'crypto';
 
 const userSchema = new mongoose.Schema(
   {
@@ -20,30 +21,23 @@ const userSchema = new mongoose.Schema(
     address: String,
     phone: {
       type: String,
-      minLength: [11, "Password must be at least 11 characters"],
-      maxLength: [11, "Password must be at most 11 characters"],
+      minLength: [11, "Phone must be exactly 11 characters"],
+      maxLength: [11, "Phone must be exactly 11 characters"],
+    },
+    accountType:{
+      type:String,
+      enum:["Easypaisa","JazzCash","SadaPay","Meezan Bank", "HBL Bank","Bank AlFalah","Al Faisal Bank"]
+    },
+    accountNo:String,
+    accountName:String,
+    role: {
+      type: String,
+      default: "user",
+      enum: ["user", "admin"],
     },
     profileImage: {
       public_id: String,
       url: String,
-    },
-    paymentMethod: {
-      bankTransfer: {
-        bankAccountNumber: Number,
-        bankAccountName: String,
-        bankName: String,
-      },
-      easypaisa: {
-        easypaisaAccountNumber: Number,
-      },
-      jazzcashAccountNumber: {
-        jazzcashAccountNumber: Number,
-      },
-    },
-    role: {
-      type: String,
-      default: "user",
-      enum: ["Auctioneer", "Bidder", "Super Admin"],
     },
     unpaidComission: {
       type: Number,
@@ -61,20 +55,29 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    resetPasswordToken: String,
+  resetPasswordExpire: Date,
   },
   { timestamps: true }
 );
 
+// Hash password before saving
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 10);
 });
+
+// Compare password method
 userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
-}
+};
+
+// Generate JWT
 userSchema.methods.generateJsonWebToken = function () {
-  return jwt.sign({id:this._id}, process.env.JWT_SECRET, {
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE,
   });
-}
-export const User = mongoose.model("User", userSchema);
+};
+
+// ✅ Prevent model overwrite error
+export const User = mongoose.models.User || mongoose.model("User", userSchema);

@@ -4,7 +4,6 @@ import ErrorHandler from "./error.js";
 import { User } from "../models/userSchema.js";
 export const isAuthenticated = catchAsyncErrors(async (req, res, next) => {
   const token = req.cookies.token;
-  console.log("Token:", token); // Debugging
   if (!token) {
     return next(new ErrorHandler("User not authenticated.", 400));
   }
@@ -17,15 +16,17 @@ export const isAuthenticated = catchAsyncErrors(async (req, res, next) => {
   }
 });
 export const authorizeRoles = (...roles) => {
-  return (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
+  return catchAsyncErrors(async (req, res, next) => {
+    if (!req.user || !roles.includes(req.user.role)) {
       return next(
         new ErrorHandler(
-          `Role: ${req.user.role} is not allowed to access this resource`,
+          `Role: ${
+            req.user?.role || "Unknown" 
+          } is not allowed to access this resource`,
           403
         )
       );
     }
     next();
-  };
+  });
 };

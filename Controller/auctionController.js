@@ -3,6 +3,7 @@ import ErrorHandler from "../middleware/error.js";
 import { Auction } from "../Models/AuctionSchema.js";
 import mongoose from "mongoose";
 import { User } from "../models/userSchema.js";
+import { Bid } from "../Models/bidSchema.js";
 export const addNewAuctionItem = catchAsyncErrors(async (req, res, next) => {
   try {
     const images = req.files;
@@ -108,7 +109,8 @@ export const getAllAuctionItems = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-export const getSingleAuctionDetails = catchAsyncErrors(async (req, res, next) => {
+export const getSingleAuctionDetails = catchAsyncErrors(
+  async (req, res, next) => {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return next(new ErrorHandler("Invalid Id format.", 400));
@@ -152,12 +154,16 @@ export const deleteAuction = catchAsyncErrors(async (req, res, next) => {
 export const republishAuction = catchAsyncErrors(async (req, res, next) => {
   const { id } = req.params;
   const { startTime, endTime, startingBid } = req.body;
+  const userId = req.user;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return next(new ErrorHandler("Invalid Id format", 400));
+  }
 
   const auction = await Auction.findById(id);
 
   if (!auction) return next(new ErrorHandler("Auction not found", 404));
 
-  if (auction.createdBy.toString() !== req.user._id.toString()) {
+  if (auction.createdBy.toString() !== userId._id.toString()) {
     return next(
       new ErrorHandler("You are not authorized to republish this auction", 403)
     );
@@ -170,20 +176,120 @@ export const republishAuction = catchAsyncErrors(async (req, res, next) => {
   if (new Date(startTime) < Date.now()) {
     return next(new ErrorHandler("Start time must be in the future", 400));
   }
+  if (auction.highestBidder) {
+    const highestBidder = await User.findById(auction.highestBidder);
+    highestBidder.moneySpent -= auctionItem.currentBid;
+    highestBidder.auctionsWOn -= 1;
+    highestBidder.save();
+  }
 
   // Update allowed fields
   auction.startTime = startTime;
   auction.endTime = endTime;
   auction.startingBid = startingBid;
   auction.currentBid = 0;
+  auction.commissionCalculated = false;
   auction.highestBidder = null;
-  auction.bids = []; // optional: clear previous bids
+  auction.bids = [];
+  await Bid.deleteMany({ auctionItem: auction._id });
+
+  await auction.save();
+  const user = await User.findById(userId);
+  if (!user) {
+    return next(new ErrorHandler("User not found", 404));
+  }
+  user.unpaidComission = 0;
+  await user.save();
+  res.status(200).json({
+    success: true,
+    message: "Auction republished successfully",
+    auction,
+  });
+});
+export const updateAuction = catchAsyncErrors(async (req, res, next) => {
+  const { id } = req.params;
+  const {
+    title,
+    description,
+    startTime,
+    endTime,
+    condition,
+    category,
+    startingBid,
+  } = req.body;
+  const newImages = req.files;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return next(new ErrorHandler("Invalid auction ID format.", 400));
+  }
+
+  const auction = await Auction.findById(id);
+  if (!auction) {
+    return next(new ErrorHandler("Auction not found.", 404));
+  }
+
+  if (auction.createdBy.toString() !== req.user._id.toString()) {
+    return next(
+      new ErrorHandler("You are not authorized to update this auction.", 403)
+    );
+  }
+
+  if (auction.bids.length > 0) {
+    return next(
+      new ErrorHandler(
+        "You cannot update an auction that already has bids.",
+        400
+      )
+    );
+  }
+
+  if (condition && condition !== "New" && condition !== "Used") {
+    return next(
+      new ErrorHandler("Condition must be either 'New' or 'Used'.", 400)
+    );
+  }
+
+  const updatedStartTime = startTime || auction.startTime;
+  const updatedEndTime = endTime || auction.endTime;
+
+  if (new Date(updatedStartTime) >= new Date(updatedEndTime)) {
+    return next(new ErrorHandler("Start time must be before end time.", 400));
+  }
+
+  if (new Date(updatedStartTime) < Date.now()) {
+    return next(new ErrorHandler("Start time must be in the future.", 400));
+  }
+
+  if (newImages && Array.isArray(newImages) && newImages.length > 0) {
+    const allowedFormats = ["image/png", "image/jpeg", "image/webp"];
+    for (let file of newImages) {
+      if (!allowedFormats.includes(file.mimetype)) {
+        return next(
+          new ErrorHandler("One or more image formats are not supported.", 400)
+        );
+      }
+    }
+
+    const imageLinks = newImages.map((file) => ({
+      public_id: file.filename,
+      url: file.path,
+    }));
+    auction.images = imageLinks;
+  }
+
+  if (title) auction.title = title;
+  if (startingBid) auction.startingBid = Number(startingBid);
+  if (description) auction.description = description;
+  if (startTime) auction.startTime = startTime;
+  if (endTime) auction.endTime = endTime;
+  if (condition) auction.condition = condition;
+  if (category) auction.category = category;
 
   await auction.save();
 
   res.status(200).json({
     success: true,
-    message: "Auction republished successfully",
+    message: "Auction updated successfully.",
     auction,
   });
 });

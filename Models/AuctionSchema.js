@@ -21,8 +21,8 @@ const auctionSchema = new mongoose.Schema(
       default: 0,
     },
     category: {
-      type: String,
-      required: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
     },
     condition: {
       type: String,

@@ -28,7 +28,17 @@ const auctionImageStorage = new CloudinaryStorage({
     transformation: [{ width: 500, height: 500, crop: "limit" }],
   },
 });
+//Storage of Commission Proofs
+const commissionProofStorage = new CloudinaryStorage({
+  cloudinary: cloudinary.v2,
+  params: {
+    folder: "commissionProofs of Online Auction System",
+    allowed_formats: ["jpg", "png", "jpeg", "webp"],
+    transformation: [{ width: 800, height: 600, crop: "limit" }],
+  },
+});
 
 // Multer uploaders
 export const uploadProfile = multer({ storage: profileImageStorage });
 export const uploadAuction = multer({ storage: auctionImageStorage });
+export const uploadComissionProof = multer({ storage: commissionProofStorage });
