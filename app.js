@@ -35,14 +35,15 @@ app.use("/api/v1/category", categoryRoutes);
 app.use("/api/v1/bid", bidRoutes);
 app.use("/api/v1/commision-proof", commisionProofRoutes);
 app.use("/api/v1/admin", adminRoutes);
-// Handle unknown routes
-app.all("*", (req, res, next) => {
-  next(new ErrorHandler(`Can't find ${req.originalUrl} on this server`, 404));
-});
+
 endedAuctionCron();
 verifyCommissionCron();
 connectDB();
 // Global error handler
 app.use(errorMiddleware);
+// Handle unknown routes
+app.all("*", (req, res, next) => {
+  next(new ErrorHandler(`Can't find ${req.originalUrl} on this server`, 404));
+});
 
 export default app;
