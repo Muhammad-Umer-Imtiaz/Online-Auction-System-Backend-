@@ -1,17 +1,17 @@
-export const generateToken = (user, statusCode, res, message) => {
+export const generateToken = (user, message, statusCode, res) => {
   const token = user.generateJsonWebToken();
-res
-  .status(statusCode)
-  .cookie("token", token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-  })
-  .json({
-    success: true,
-    message,
-    token,
-    user,
-  });
-}
+  res
+    .status(statusCode)
+    .cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    })
+    .json({
+      success: true,
+      message,
+      token,
+      user,
+    });
+};
